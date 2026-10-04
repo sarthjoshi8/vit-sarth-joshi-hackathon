@@ -170,17 +170,20 @@ export default function Dashboard({ onNavigateToStress }) {
                     backgroundColor: '#111827',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: '#60a5fa',
                   }}
+                  itemStyle={{ color: '#38bdf8', fontWeight: 600 }}
+                  labelStyle={{ color: '#60a5fa', fontWeight: 700 }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '13px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', fontSize: '13px' }}>
             {sentimentData.map((s) => (
               <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: s.color }}></span>
-                {s.name}: <strong>{s.value}</strong>
+                <span style={{ color: '#38bdf8', fontWeight: 700, letterSpacing: '0.3px' }}>{s.name}:</span>
+                <strong style={{ color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>{s.value.toLocaleString()}</strong>
               </div>
             ))}
           </div>
