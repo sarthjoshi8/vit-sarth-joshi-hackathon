@@ -6,6 +6,8 @@ import TransactionsView from './components/TransactionsView';
 import NLPFeed from './components/NLPFeed';
 import LiveAnalyzer from './components/LiveAnalyzer';
 import ARLensModal from './components/ARLensModal';
+import TickerTape from './components/TickerTape';
+import AudioBriefingButton from './components/AudioBriefingButton';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'stress' | 'globe' | 'transactions' | 'nlp' | 'analyzer'
@@ -151,93 +153,101 @@ export default function App() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="main-content">
-        {/* Top Header Bar */}
-        <header
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '28px',
-            paddingBottom: '20px',
-            borderBottom: '1px solid var(--border-glass)',
-            flexWrap: 'wrap',
-            gap: '16px',
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--accent-indigo)', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                S&amp;P GLOBAL &amp; CRISIL CAMPUS HACKATHON 2026
-              </span>
-              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--text-muted)' }}></span>
-              <span style={{ fontSize: '11px', color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-emerald)' }}></span>
-                BACKEND CONNECTED
-              </span>
-            </div>
-            <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>
-              {activeTab === 'dashboard' && 'Executive Risk Intelligence Overview'}
-              {activeTab === 'stress' && 'Module B: Strategic Portfolio Stress Testing'}
-              {activeTab === 'globe' && '3D Geospatial Financial Risk Corridor'}
-              {activeTab === 'transactions' && 'Fraud & Transaction Anomaly Surveillance'}
-              {activeTab === 'nlp' && 'NLP Sentiment & Financial Intelligence Feed'}
-              {activeTab === 'analyzer' && 'Live Financial Headline & NLP Sentence Analyzer'}
-            </h1>
-          </div>
+      <main className="main-content" style={{ padding: 0 }}>
+        {/* Bloomberg-Style Scrolling Market Ticker */}
+        <TickerTape />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-            {/* Theme Mode Toggle Pill */}
-            <div className="theme-switcher">
-              <button
-                className={`theme-btn ${theme === 'obsidian' ? 'active' : ''}`}
-                onClick={() => changeTheme('obsidian')}
-                title="Palantir / Bloomberg Obsidian Terminal"
-              >
-                ⬛ Obsidian
-              </button>
-              <button
-                className={`theme-btn ${theme === 'cyberpunk' ? 'active' : ''}`}
-                onClick={() => changeTheme('cyberpunk')}
-                title="Cyberpunk Neon Glass"
-              >
-                🟪 Cyberpunk
-              </button>
-              <button
-                className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
-                onClick={() => changeTheme('light')}
-                title="Crisil / S&P Institutional Light"
-              >
-                ☀️ S&amp;P Light
-              </button>
+        <div style={{ padding: '24px 32px' }}>
+          {/* Top Header Bar */}
+          <header
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '28px',
+              paddingBottom: '20px',
+              borderBottom: '1px solid var(--border-glass)',
+              flexWrap: 'wrap',
+              gap: '16px',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--accent-indigo)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  S&amp;P GLOBAL &amp; CRISIL CAMPUS HACKATHON 2026
+                </span>
+                <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--text-muted)' }}></span>
+                <span style={{ fontSize: '11px', color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-emerald)' }}></span>
+                  BACKEND CONNECTED
+                </span>
+              </div>
+              <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>
+                {activeTab === 'dashboard' && 'Executive Risk Intelligence Overview'}
+                {activeTab === 'stress' && 'Module B: Strategic Portfolio Stress Testing'}
+                {activeTab === 'globe' && '3D Geospatial Financial Risk Corridor'}
+                {activeTab === 'transactions' && 'Fraud & Transaction Anomaly Surveillance'}
+                {activeTab === 'nlp' && 'NLP Sentiment & Financial Intelligence Feed'}
+                {activeTab === 'analyzer' && 'Live Financial Headline & NLP Sentence Analyzer'}
+              </h1>
             </div>
 
-            <button
-              className="btn btn-primary"
-              onClick={() => setIsArOpen(true)}
-              style={{
-                background: 'var(--gradient-primary)',
-                color: theme === 'light' ? '#fff' : '#05080e',
-                boxShadow: 'var(--shadow-glow)',
-              }}
-            >
-              👓 Launch AR Mode
-            </button>
-          </div>
-        </header>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {/* AI Voice Officer Audio Briefing */}
+              <AudioBriefingButton />
 
-        {/* View Routing */}
-        {activeTab === 'dashboard' && (
-          <Dashboard onNavigateToStress={() => setActiveTab('stress')} />
-        )}
-        {activeTab === 'stress' && <StressTesting />}
-        {activeTab === 'globe' && <Globe3D />}
-        {activeTab === 'transactions' && <TransactionsView />}
-        {activeTab === 'nlp' && <NLPFeed />}
-        {activeTab === 'analyzer' && <LiveAnalyzer />}
+              {/* Theme Mode Toggle Pill */}
+              <div className="theme-switcher">
+                <button
+                  className={`theme-btn ${theme === 'obsidian' ? 'active' : ''}`}
+                  onClick={() => changeTheme('obsidian')}
+                  title="Palantir / Bloomberg Obsidian Terminal"
+                >
+                  ⬛ Obsidian
+                </button>
+                <button
+                  className={`theme-btn ${theme === 'cyberpunk' ? 'active' : ''}`}
+                  onClick={() => changeTheme('cyberpunk')}
+                  title="Cyberpunk Neon Glass"
+                >
+                  🟪 Cyberpunk
+                </button>
+                <button
+                  className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
+                  onClick={() => changeTheme('light')}
+                  title="Crisil / S&P Institutional Light"
+                >
+                  ☀️ S&amp;P Light
+                </button>
+              </div>
 
-        {/* AR Modal */}
-        <ARLensModal isOpen={isArOpen} onClose={() => setIsArOpen(false)} />
+              <button
+                className="btn btn-primary"
+                onClick={() => setIsArOpen(true)}
+                style={{
+                  background: 'var(--gradient-primary)',
+                  color: theme === 'light' ? '#fff' : '#05080e',
+                  boxShadow: 'var(--shadow-glow)',
+                }}
+              >
+                👓 Launch AR Mode
+              </button>
+            </div>
+          </header>
+
+          {/* View Routing */}
+          {activeTab === 'dashboard' && (
+            <Dashboard onNavigateToStress={() => setActiveTab('stress')} />
+          )}
+          {activeTab === 'stress' && <StressTesting />}
+          {activeTab === 'globe' && <Globe3D />}
+          {activeTab === 'transactions' && <TransactionsView />}
+          {activeTab === 'nlp' && <NLPFeed />}
+          {activeTab === 'analyzer' && <LiveAnalyzer />}
+
+          {/* AR Modal */}
+          <ARLensModal isOpen={isArOpen} onClose={() => setIsArOpen(false)} />
+        </div>
       </main>
     </div>
   );
