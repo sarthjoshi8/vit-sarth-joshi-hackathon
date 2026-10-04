@@ -1,5 +1,6 @@
 """Dashboard & analytics API endpoints."""
 from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from src.backend.app.database import get_db
@@ -173,3 +174,34 @@ def get_unique_stocks(db: Session = Depends(get_db)):
     """Get list of unique stocks in tweet data."""
     stocks = db.query(Tweet.stock).distinct().all()
     return {"stocks": sorted([s[0] for s in stocks if s[0]])}
+
+
+class TextAnalysisRequest(BaseModel):
+    text: str
+    save_to_feed: bool = False
+
+
+@router.post("/analyze-text")
+def analyze_custom_text(req: TextAnalysisRequest, db: Session = Depends(get_db)):
+    """Analyze custom headline or sentence in real-time."""
+    from src.backend.app.services.sentiment import analyze_detailed
+    from datetime import datetime
+
+    analysis = analyze_detailed(req.text)
+
+    # Optionally persist as an active risk event
+    if req.save_to_feed and req.text.strip():
+        db_event = RiskEvent(
+            timestamp=datetime.utcnow().isoformat(),
+            category="market" if analysis["label"] != "neutral" else "sentiment",
+            severity="critical" if analysis["risk_rating"] == "CRITICAL" else "high" if analysis["risk_rating"] == "HIGH" else "medium" if analysis["risk_rating"] == "MEDIUM" else "low",
+            title=f"User Live Input: {req.text[:120]}",
+            description=f"Confidence: {(analysis['confidence']*100):.0f}% | Recommendation: {analysis['recommendation']}",
+            source="custom_input",
+            score=abs(analysis["score"]) if analysis["score"] != 0 else 0.25,
+        )
+        db.add(db_event)
+        db.commit()
+
+    return analysis
+

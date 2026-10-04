@@ -4,10 +4,11 @@ import StressTesting from './components/StressTesting';
 import Globe3D from './components/Globe3D';
 import TransactionsView from './components/TransactionsView';
 import NLPFeed from './components/NLPFeed';
+import LiveAnalyzer from './components/LiveAnalyzer';
 import ARLensModal from './components/ARLensModal';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'stress' | 'globe' | 'transactions' | 'nlp'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'stress' | 'globe' | 'transactions' | 'nlp' | 'analyzer'
   const [isArOpen, setIsArOpen] = useState(false);
 
   return (
@@ -84,6 +85,28 @@ export default function App() {
             <span className="nav-icon">📰</span>
             <span>NLP Sentiment Feed</span>
           </div>
+
+          <div
+            className={`nav-item ${activeTab === 'analyzer' ? 'active' : ''}`}
+            onClick={() => setActiveTab('analyzer')}
+            style={{ position: 'relative' }}
+          >
+            <span className="nav-icon">🔬</span>
+            <span>Live NLP Analyzer</span>
+            <span
+              style={{
+                marginLeft: 'auto',
+                fontSize: '9px',
+                fontWeight: 800,
+                background: 'var(--accent-cyan)',
+                color: '#0a0e1a',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              INPUT
+            </span>
+          </div>
         </div>
 
         {/* Bottom AR Launcher in Sidebar */}
@@ -148,6 +171,7 @@ export default function App() {
               {activeTab === 'globe' && '3D Geospatial Financial Risk Corridor'}
               {activeTab === 'transactions' && 'Fraud & Transaction Anomaly Surveillance'}
               {activeTab === 'nlp' && 'NLP Sentiment & Financial Intelligence Feed'}
+              {activeTab === 'analyzer' && 'Live Financial Headline & NLP Sentence Analyzer'}
             </h1>
           </div>
 
@@ -174,6 +198,7 @@ export default function App() {
         {activeTab === 'globe' && <Globe3D />}
         {activeTab === 'transactions' && <TransactionsView />}
         {activeTab === 'nlp' && <NLPFeed />}
+        {activeTab === 'analyzer' && <LiveAnalyzer />}
 
         {/* AR Modal */}
         <ARLensModal isOpen={isArOpen} onClose={() => setIsArOpen(false)} />

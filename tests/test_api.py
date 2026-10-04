@@ -94,3 +94,18 @@ def test_stress_test_comparison():
     assert "comparison" in data
     assert "recession" in data["comparison"]
     assert "market_crash" in data["comparison"]
+
+
+def test_analyze_custom_text():
+    payload = {
+        "text": "NVIDIA posts massive quarterly revenue growth beating estimates",
+        "save_to_feed": False
+    }
+    res = client.post("/api/analyze-text", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["label"] == "positive"
+    assert data["score"] > 0
+    assert "growth" in data["positive_keywords"]
+    assert data["risk_rating"] == "LOW"
+
