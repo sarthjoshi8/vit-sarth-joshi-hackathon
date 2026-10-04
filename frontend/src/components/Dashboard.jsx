@@ -3,7 +3,6 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import Globe3D from './Globe3D';
 
 const COLORS = ['#6366f1', '#f43f5e', '#f59e0b', '#10b981', '#22d3ee'];
 
@@ -143,87 +142,82 @@ export default function Dashboard({ onNavigateToStress }) {
         </div>
       </div>
 
-      {/* Central Command Deck: 3D Geospatial Globe + Analytics Panel */}
-      <div className="dashboard-hero-grid">
-        {/* Interactive 3D Risk Globe Embedded */}
-        <div>
-          <Globe3D height={380} compact={true} onSelectHub={(hub) => console.log('Selected hub:', hub)} />
+      {/* Charts Row */}
+      <div className="charts-grid">
+        {/* Sentiment Distribution */}
+        <div className="chart-card">
+          <h3>
+            <span>📈</span> NLP News &amp; Sentiment Polarity Breakdown
+          </h3>
+          <div style={{ height: '240px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={sentimentData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={95}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {sentimentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#111827',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    color: '#60a5fa',
+                  }}
+                  itemStyle={{ color: '#38bdf8', fontWeight: 600 }}
+                  labelStyle={{ color: '#60a5fa', fontWeight: 700 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', fontSize: '13px' }}>
+            {sentimentData.map((s) => (
+              <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: s.color }}></span>
+                <span style={{ color: '#38bdf8', fontWeight: 700, letterSpacing: '0.3px' }}>{s.name}:</span>
+                <strong style={{ color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>{s.value.toLocaleString()}</strong>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Analytics Breakdown Stack */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Sentiment Distribution */}
-          <div className="chart-card" style={{ padding: '16px 20px' }}>
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '13px' }}>
-              <span>📈</span> NLP News &amp; Sentiment Polarity
-            </h3>
-            <div style={{ height: '150px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={sentimentData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={68}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {sentimentData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#111827',
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      color: '#60a5fa',
-                    }}
-                    itemStyle={{ color: '#38bdf8', fontWeight: 600 }}
-                    labelStyle={{ color: '#60a5fa', fontWeight: 700 }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', fontSize: '12px', marginTop: '6px', flexWrap: 'wrap' }}>
-              {sentimentData.map((s) => (
-                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.color }}></span>
-                  <span style={{ color: '#38bdf8', fontWeight: 700 }}>{s.name}:</span>
-                  <strong style={{ color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>{s.value.toLocaleString()}</strong>
-                </div>
-              ))}
-            </div>
+        {/* Risk Events by Category */}
+        <div className="chart-card">
+          <h3>
+            <span>📊</span> Risk Signals by Domain Category
+          </h3>
+          <div style={{ height: '240px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={categoryData} margin={{ top: 10, right: 10, left: -10, bottom: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+                <XAxis dataKey="name" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#111827',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    color: '#fff',
+                  }}
+                />
+                <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]}>
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-
-          {/* Risk Events by Category */}
-          <div className="chart-card" style={{ padding: '16px 20px' }}>
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '13px' }}>
-              <span>📊</span> Cross-Domain Risk Signals
-            </h3>
-            <div style={{ height: '140px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categoryData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-                  <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#111827',
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      color: '#fff',
-                    }}
-                  />
-                  <Bar dataKey="count" fill="#6366f1" radius={[3, 3, 0, 0]}>
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+          <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
+            Aggregated cross-domain risk signals from transactions, news and social sentiment
           </div>
         </div>
       </div>
