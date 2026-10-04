@@ -157,18 +157,18 @@ export default function App() {
         {/* Bloomberg-Style Scrolling Market Ticker */}
         <TickerTape />
 
-        <div style={{ padding: '24px 32px' }}>
+        <div className="content-wrapper">
           {/* Top Header Bar */}
           <header
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '28px',
-              paddingBottom: '20px',
+              marginBottom: '20px',
+              paddingBottom: '16px',
               borderBottom: '1px solid var(--border-glass)',
               flexWrap: 'wrap',
-              gap: '16px',
+              gap: '14px',
             }}
           >
             <div>
@@ -182,7 +182,7 @@ export default function App() {
                   BACKEND CONNECTED
                 </span>
               </div>
-              <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>
                 {activeTab === 'dashboard' && 'Executive Risk Intelligence Overview'}
                 {activeTab === 'stress' && 'Module B: Strategic Portfolio Stress Testing'}
                 {activeTab === 'globe' && '3D Geospatial Financial Risk Corridor'}
@@ -192,7 +192,7 @@ export default function App() {
               </h1>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               {/* AI Voice Officer Audio Briefing */}
               <AudioBriefingButton />
 
@@ -221,6 +221,16 @@ export default function App() {
                 </button>
               </div>
 
+              {/* 3D Globe quick button */}
+              <button
+                className={`btn ${activeTab === 'globe' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setActiveTab('globe')}
+                style={{ fontSize: '12px', padding: '6px 12px' }}
+                title="Open Dedicated 3D Global Risk Surveillance Globe"
+              >
+                🌐 3D Globe
+              </button>
+
               <button
                 className="btn btn-primary"
                 onClick={() => setIsArOpen(true)}
@@ -228,6 +238,8 @@ export default function App() {
                   background: 'var(--gradient-primary)',
                   color: theme === 'light' ? '#fff' : '#05080e',
                   boxShadow: 'var(--shadow-glow)',
+                  fontSize: '12px',
+                  padding: '6px 12px',
                 }}
               >
                 👓 Launch AR Mode

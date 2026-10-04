@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid
 } from 'recharts';
 import DataUploaderModal from './DataUploaderModal';
+import Globe3D from './Globe3D';
 
 const DEFAULT_PORTFOLIO = [
   { stock: 'AAPL', weight: 0.25, value: 50000, sector: 'Technology' },
@@ -49,15 +50,13 @@ const CORRELATION_MATRIX = {
 export default function StressTesting() {
   const [portfolio, setPortfolio] = useState(DEFAULT_PORTFOLIO);
   const [scenario, setScenario] = useState('recession');
-  const [customShock, setCustomShock] = useState(null);
   const [useCustomShock, setUseCustomShock] = useState(false);
   const [sliderVal, setSliderVal] = useState(-25);
   const [scenariosList, setScenariosList] = useState([]);
   const [results, setResults] = useState(null);
   const [comparison, setComparison] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
-  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [detailTab, setDetailTab] = useState('breakdown'); // 'breakdown' | 'matrix' | 'heatmap' | 'globe'
   const [isUploaderOpen, setIsUploaderOpen] = useState(false);
   const [hedgeMessage, setHedgeMessage] = useState('');
 
@@ -118,7 +117,6 @@ export default function StressTesting() {
     const ticker = newStock.trim().toUpperCase();
     const val = parseFloat(newAmount) || 10000;
     const updated = [...portfolio, { stock: ticker, value: val, weight: 0.1, sector: 'Custom' }];
-    // Rebalance weights
     const total = updated.reduce((acc, cur) => acc + cur.value, 0);
     const rebalanced = updated.map(p => ({ ...p, weight: p.value / total }));
     setPortfolio(rebalanced);
@@ -159,32 +157,33 @@ export default function StressTesting() {
   const totalPortfolioValue = portfolio.reduce((acc, p) => acc + p.value, 0);
 
   return (
-    <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Module B Header Banner */}
+    <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Module B Header Banner (Compact) */}
       <div
         className="glass-card"
         style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.06) 100%)',
+          border: '1px solid rgba(99, 102, 241, 0.25)',
+          padding: '14px 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: '12px',
         }}
       >
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 700, color: 'var(--accent-cyan)', background: 'rgba(34, 211, 238, 0.12)', padding: '4px 10px', borderRadius: '4px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            <span>⚡</span> HACKATHON MODULE B (STRATEGIC STRESS TESTING)
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'var(--accent-cyan)', background: 'rgba(34, 211, 238, 0.12)', padding: '3px 8px', borderRadius: '4px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <span>⚡</span> HACKATHON MODULE B • STRATEGIC STRESS TESTING
           </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 6px 0' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 2px 0' }}>
             Macroeconomic Shock &amp; Portfolio Monte Carlo Simulation
           </h2>
-          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '650px' }}>
-            Evaluate systemic tail-risk exposure across asset classes under historical and hypothetical macro stress regimes. Computes 95% Parametric &amp; Monte Carlo VaR / Expected Shortfall (CVaR).
-          </p>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+            Simulate systemic tail-risk drawdowns, compute 95% Parametric VaR &amp; Expected Shortfall (CVaR).
+          </div>
           {hedgeMessage && (
-            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+            <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--accent-emerald)', fontWeight: 700 }}>
               {hedgeMessage}
             </div>
           )}
@@ -192,40 +191,19 @@ export default function StressTesting() {
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button
-            className={`btn ${!showComparison && !showHeatmap ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ fontSize: '11px', padding: '6px 12px' }}
-            onClick={() => { setShowComparison(false); setShowHeatmap(false); }}
-          >
-            📊 Scenario Analyzer
-          </button>
-          <button
-            className={`btn ${showComparison ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ fontSize: '11px', padding: '6px 12px' }}
-            onClick={() => { setShowComparison(true); setShowHeatmap(false); }}
-          >
-            ⚡ All-Scenario Matrix
-          </button>
-          <button
-            className={`btn ${showHeatmap ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ fontSize: '11px', padding: '6px 12px' }}
-            onClick={() => { setShowHeatmap(!showHeatmap); setShowComparison(false); }}
-          >
-            🔥 Correlation Heatmap
-          </button>
-          <button
             className="btn btn-secondary"
             style={{ fontSize: '11px', padding: '6px 12px', color: 'var(--accent-emerald)', border: '1px solid rgba(0, 245, 155, 0.4)' }}
             onClick={handleOptimizeHedge}
             title="Auto-rebalance portfolio towards minimum-variance defensive assets"
           >
-            🛡️ Optimize Hedge
+            🛡️ Auto-Hedge
           </button>
           <button
             className="btn btn-secondary"
             style={{ fontSize: '11px', padding: '6px 12px', color: 'var(--accent-cyan)', border: '1px solid rgba(0, 242, 254, 0.4)' }}
             onClick={() => setIsUploaderOpen(true)}
           >
-            📂 Upload CSV
+            📂 Ingest CSV
           </button>
           <button
             className="btn btn-secondary"
@@ -238,246 +216,256 @@ export default function StressTesting() {
         </div>
       </div>
 
-      {/* Preset Selector & Portfolio Management */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
-              💼 Strategic Portfolio Allocation (Total: ${(totalPortfolioValue).toLocaleString()})
-            </h3>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-              Select benchmark portfolio or customize individual asset weights
-            </span>
-          </div>
+      {/* 2-Column Command Cockpit Layout */}
+      <div className="stress-cockpit-grid">
+        {/* LEFT COLUMN: Controls & Composition (~360px) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Card 1: Portfolio Allocation */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 800 }}>
+                  💼 Portfolio Allocation
+                </h3>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  Total Equity: ${(totalPortfolioValue).toLocaleString()}
+                </span>
+              </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '6px 12px' }} onClick={() => handleLoadPreset('balanced')}>
-              Default Balanced
-            </button>
-            <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '6px 12px' }} onClick={() => handleLoadPreset('techHeavy')}>
-              Tech Growth Heavy
-            </button>
-            <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '6px 12px' }} onClick={() => handleLoadPreset('defensive')}>
-              Defensive / Utilities
-            </button>
-          </div>
-        </div>
+              {/* Presets */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button className="btn btn-secondary" style={{ fontSize: '10px', padding: '3px 7px' }} onClick={() => handleLoadPreset('balanced')}>Bal</button>
+                <button className="btn btn-secondary" style={{ fontSize: '10px', padding: '3px 7px' }} onClick={() => handleLoadPreset('techHeavy')}>Tech</button>
+                <button className="btn btn-secondary" style={{ fontSize: '10px', padding: '3px 7px' }} onClick={() => handleLoadPreset('defensive')}>Def</button>
+              </div>
+            </div>
 
-        {/* Portfolio Tags / Pills */}
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
-          {portfolio.map((pos, idx) => (
-            <div
-              key={pos.stock + idx}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 12px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid var(--border-glass)',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '13px',
-              }}
-            >
-              <span style={{ fontWeight: 700, color: 'var(--accent-indigo)', fontFamily: 'var(--font-mono)' }}>
-                {pos.stock}
-              </span>
-              <span style={{ color: 'var(--text-muted)' }}>
-                ${pos.value.toLocaleString()} ({((pos.value / totalPortfolioValue) * 100).toFixed(0)}%)
-              </span>
-              <button
-                onClick={() => handleRemoveStock(idx)}
+            {/* Scrollable Asset Chips */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '160px', overflowY: 'auto', marginBottom: '12px', paddingRight: '4px' }}>
+              {portfolio.map((pos, idx) => (
+                <div
+                  key={pos.stock + idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '5px 10px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid var(--border-glass)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '12px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontWeight: 800, color: 'var(--accent-indigo)', fontFamily: 'var(--font-mono)' }}>
+                      {pos.stock}
+                    </span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      {pos.sector}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                      ${pos.value.toLocaleString()}
+                    </span>
+                    <span style={{ fontSize: '10px', color: 'var(--accent-cyan)' }}>
+                      {((pos.value / totalPortfolioValue) * 100).toFixed(0)}%
+                    </span>
+                    <button
+                      onClick={() => handleRemoveStock(idx)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--accent-rose)',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        padding: '0 2px',
+                        fontSize: '12px',
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add Asset Inline Form */}
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="Ticker (e.g. GOOGL)"
+                value={newStock}
+                onChange={(e) => setNewStock(e.target.value)}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--accent-rose)',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  padding: '0 2px',
+                  padding: '6px 10px',
+                  background: 'var(--bg-glass)',
+                  border: '1px solid var(--border-glass)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  flex: 1,
                 }}
-              >
-                ✕
+              />
+              <input
+                type="number"
+                placeholder="$"
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+                style={{
+                  padding: '6px 8px',
+                  background: 'var(--bg-glass)',
+                  border: '1px solid var(--border-glass)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  width: '70px',
+                }}
+              />
+              <button className="btn btn-primary" style={{ padding: '6px 10px', fontSize: '11px' }} onClick={handleAddStock}>
+                + Add
               </button>
             </div>
-          ))}
-        </div>
-
-        {/* Add asset bar */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="Stock ticker (e.g. GOOGL, META)"
-            value={newStock}
-            onChange={(e) => setNewStock(e.target.value)}
-            style={{
-              padding: '8px 14px',
-              background: 'var(--bg-glass)',
-              border: '1px solid var(--border-glass)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-primary)',
-              fontFamily: 'var(--font-mono)',
-              width: '220px',
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Value ($)"
-            value={newAmount}
-            onChange={(e) => setNewAmount(e.target.value)}
-            style={{
-              padding: '8px 14px',
-              background: 'var(--bg-glass)',
-              border: '1px solid var(--border-glass)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-primary)',
-              fontFamily: 'var(--font-mono)',
-              width: '140px',
-            }}
-          />
-          <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '13px' }} onClick={handleAddStock}>
-            + Add Position
-          </button>
-        </div>
-      </div>
-
-      {/* Macro Scenario Selection Grid */}
-      <div>
-        <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>🌪️</span> Predefined Macro Stress Scenarios
-        </h3>
-        <div className="scenario-cards">
-          {[
-            { key: 'recession', icon: '📉', label: 'Global Recession', shock: '-25% shock', desc: 'Sustained GDP contraction, credit spread widening' },
-            { key: 'inflation', icon: '🔥', label: 'Inflation Spike', shock: '-15% shock', desc: 'Aggressive Fed tightening, commodity price surge' },
-            { key: 'market_crash', icon: '⚡', label: 'Black Swan Crash', shock: '-40% shock', desc: 'Severe systemic liquidity freeze, cascade margin calls' },
-            { key: 'geopolitical', icon: '⚔️', label: 'Geopolitical Crisis', shock: '-20% shock', desc: 'Sanctions, critical supply chain choke, embargoes' },
-            { key: 'pandemic', icon: '🧬', label: 'Pandemic Shock', shock: '-30% shock', desc: 'Global mobility restrictions & cross-border shutdown' }
-          ].map((item) => (
-            <div
-              key={item.key}
-              className={`scenario-card ${scenario === item.key && !useCustomShock ? 'selected' : ''}`}
-              onClick={() => {
-                setScenario(item.key);
-                setUseCustomShock(false);
-              }}
-            >
-              <div className="scenario-icon">{item.icon}</div>
-              <div className="scenario-name">{item.label}</div>
-              <div className="scenario-shock">{item.shock}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
-                {item.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Custom Shock Override Slider */}
-        <div
-          className="glass-card"
-          style={{
-            marginTop: '12px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '16px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <input
-              type="checkbox"
-              id="customShockToggle"
-              checked={useCustomShock}
-              onChange={(e) => setUseCustomShock(e.target.checked)}
-              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-            />
-            <label htmlFor="customShockToggle" style={{ fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
-              Enable Custom Stress Shock Override:
-            </label>
-            <span style={{ fontSize: '18px', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--accent-rose)' }}>
-              {sliderVal}%
-            </span>
           </div>
 
-          <div style={{ flex: 1, minWidth: '240px', maxWidth: '400px' }}>
-            <input
-              type="range"
-              min="-60"
-              max="-5"
-              step="1"
-              value={sliderVal}
-              disabled={!useCustomShock}
-              onChange={(e) => setSliderVal(parseInt(e.target.value))}
-              style={{ width: '100%', cursor: useCustomShock ? 'pointer' : 'not-allowed' }}
-            />
+          {/* Card 2: Macro Regime Selection */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 800 }}>
+              🌪️ Macro Stress Regime
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+              {[
+                { key: 'recession', icon: '📉', label: 'Global Recession', shock: '-25%' },
+                { key: 'inflation', icon: '🔥', label: 'Inflation Spike', shock: '-15%' },
+                { key: 'market_crash', icon: '⚡', label: 'Black Swan Crash', shock: '-40%' },
+                { key: 'geopolitical', icon: '⚔️', label: 'Geopolitical Crisis', shock: '-20%' },
+                { key: 'pandemic', icon: '🧬', label: 'Pandemic Shock', shock: '-30%' }
+              ].map((item) => (
+                <div
+                  key={item.key}
+                  onClick={() => {
+                    setScenario(item.key);
+                    setUseCustomShock(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    background: scenario === item.key && !useCustomShock ? 'rgba(0, 242, 254, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                    border: scenario === item.key && !useCustomShock ? '1px solid var(--accent-cyan)' : '1px solid var(--border-glass)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600 }}>
+                    <span>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </div>
+                  <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-rose)' }}>
+                    {item.shock}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Custom Shock Override Slider */}
+            <div style={{ background: 'rgba(0, 0, 0, 0.2)', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={useCustomShock}
+                    onChange={(e) => setUseCustomShock(e.target.checked)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <span>Custom Shock:</span>
+                </label>
+                <span style={{ fontSize: '13px', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--accent-rose)' }}>
+                  {sliderVal}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="-5"
+                step="1"
+                value={sliderVal}
+                disabled={!useCustomShock}
+                onChange={(e) => setSliderVal(parseInt(e.target.value))}
+                style={{ width: '100%', cursor: useCustomShock ? 'pointer' : 'not-allowed' }}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Simulation Results Section */}
-      {results && !showComparison && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Top Result Metrics */}
-          <div className="stats-grid">
-            <div className="stat-card rose">
-              <div className="stat-label">Projected Portfolio Loss</div>
-              <div className="stat-value" style={{ color: 'var(--accent-rose)' }}>
-                -${(results.total_loss || 0).toLocaleString()}
+        {/* RIGHT COLUMN: Analytics, Chart & Workspace Tabs */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Row 1: 4 Impact KPI Cards */}
+          <div className="stats-grid" style={{ marginBottom: 0, gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+            <div className="stat-card rose" style={{ padding: '12px 14px' }}>
+              <div className="stat-label" style={{ fontSize: '10px' }}>Capital Drawdown</div>
+              <div className="stat-value" style={{ fontSize: '20px', color: 'var(--accent-rose)' }}>
+                -${(results?.total_loss || 0).toLocaleString()}
               </div>
-              <div className="stat-sub">
-                -{results.loss_pct}% of total equity
+              <div className="stat-sub" style={{ fontSize: '10px' }}>
+                -{results?.loss_pct || 0}% total equity
               </div>
             </div>
 
-            <div className="stat-card amber">
-              <div className="stat-label">95% Value-at-Risk (VaR)</div>
-              <div className="stat-value" style={{ color: 'var(--accent-amber)' }}>
-                ${(results.var_95 || 0).toLocaleString()}
+            <div className="stat-card amber" style={{ padding: '12px 14px' }}>
+              <div className="stat-label" style={{ fontSize: '10px' }}>1-Mo 95% VaR</div>
+              <div className="stat-value" style={{ fontSize: '20px', color: 'var(--accent-amber)' }}>
+                ${(results?.var_95 || 0).toLocaleString()}
               </div>
-              <div className="stat-sub">
-                1-Month Horizon (Monte Carlo)
-              </div>
-            </div>
-
-            <div className="stat-card indigo">
-              <div className="stat-label">Conditional VaR (CVaR / ES)</div>
-              <div className="stat-value" style={{ color: 'var(--accent-indigo)' }}>
-                ${(results.cvar_95 || 0).toLocaleString()}
-              </div>
-              <div className="stat-sub">
-                Expected Shortfall in Tail 5%
+              <div className="stat-sub" style={{ fontSize: '10px' }}>
+                Monte Carlo Simulation
               </div>
             </div>
 
-            <div className="stat-card cyan">
-              <div className="stat-label">Stressed Portfolio Value</div>
-              <div className="stat-value">
-                ${(results.stressed_value || 0).toLocaleString()}
+            <div className="stat-card indigo" style={{ padding: '12px 14px' }}>
+              <div className="stat-label" style={{ fontSize: '10px' }}>Expected Shortfall</div>
+              <div className="stat-value" style={{ fontSize: '20px', color: 'var(--accent-indigo)' }}>
+                ${(results?.cvar_95 || 0).toLocaleString()}
               </div>
-              <div className="stat-sub">
-                Base: ${(results.original_value || 0).toLocaleString()}
+              <div className="stat-sub" style={{ fontSize: '10px' }}>
+                Tail 5% Mean Loss
+              </div>
+            </div>
+
+            <div className="stat-card emerald" style={{ padding: '12px 14px' }}>
+              <div className="stat-label" style={{ fontSize: '10px' }}>Post-Shock Equity</div>
+              <div className="stat-value" style={{ fontSize: '20px', color: 'var(--accent-emerald)' }}>
+                ${(results?.stressed_value || 0).toLocaleString()}
+              </div>
+              <div className="stat-sub" style={{ fontSize: '10px' }}>
+                Residual Capital
               </div>
             </div>
           </div>
 
-          {/* Asset-Level Breakdown Chart */}
-          <div className="glass-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
+          {/* Row 2: Asset Pre-Shock vs Post-Shock Bar Chart */}
+          <div className="glass-card" style={{ padding: '14px 18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h3 style={{ margin: 0, fontSize: '13px', fontWeight: 800 }}>
                 📊 Stressed Value vs. Pre-Shock Value by Asset
               </h3>
-              <span className={`badge ${results.risk_rating.toLowerCase()}`}>
-                Risk Rating: {results.risk_rating}
-              </span>
+              {results && (
+                <span className={`badge ${results.risk_rating.toLowerCase()}`} style={{ fontSize: '9px' }}>
+                  Rating: {results.risk_rating}
+                </span>
+              )}
             </div>
 
-            <div style={{ height: '320px', width: '100%' }}>
+            <div style={{ height: '170px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={results.stock_impacts || []} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
+                <BarChart data={results?.stock_impacts || []} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-                  <XAxis dataKey="stock" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v / 1000}k`} />
+                  <XAxis dataKey="stock" stroke="#94a3b8" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#94a3b8" tick={{ fontSize: 10 }} tickFormatter={(v) => `$${v / 1000}k`} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#111827',
@@ -487,165 +475,177 @@ export default function StressTesting() {
                     }}
                     formatter={(val, name) => [`$${val.toLocaleString()}`, name === 'original_value' ? 'Base Value' : 'Stressed Value']}
                   />
-                  <Bar dataKey="original_value" name="Base Value" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="stressed_value" name="Stressed Value" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="original_value" name="Base Value" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="stressed_value" name="Stressed Value" fill="#f43f5e" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Impact Breakdown Table */}
-          <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border-glass)' }}>
-              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>
-                📑 Detailed Position Risk &amp; Sector Sensitivities
-              </h3>
+          {/* Row 3: Detail Workspace with Tab Switcher */}
+          <div className="glass-card" style={{ padding: '14px 18px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                <button
+                  className={`btn ${detailTab === 'breakdown' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '10px', padding: '5px 10px' }}
+                  onClick={() => setDetailTab('breakdown')}
+                >
+                  📋 Position Breakdown
+                </button>
+                <button
+                  className={`btn ${detailTab === 'matrix' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '10px', padding: '5px 10px' }}
+                  onClick={() => setDetailTab('matrix')}
+                >
+                  ⚡ All-Scenario Matrix
+                </button>
+                <button
+                  className={`btn ${detailTab === 'heatmap' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '10px', padding: '5px 10px' }}
+                  onClick={() => setDetailTab('heatmap')}
+                >
+                  🔥 Correlation Heatmap
+                </button>
+                <button
+                  className={`btn ${detailTab === 'globe' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ fontSize: '10px', padding: '5px 10px' }}
+                  onClick={() => setDetailTab('globe')}
+                >
+                  🌐 3D Risk Corridors
+                </button>
+              </div>
             </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Ticker</th>
-                  <th>Sector</th>
-                  <th>Base Exposure</th>
-                  <th>Shock Applied</th>
-                  <th>Loss Amount</th>
-                  <th>Post-Shock Value</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(results.stock_impacts || []).map((row, idx) => (
-                  <tr key={row.stock + idx}>
-                    <td style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                      {row.stock}
-                    </td>
-                    <td>{row.sector}</td>
-                    <td>${row.original_value.toLocaleString()}</td>
-                    <td style={{ color: 'var(--accent-rose)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                      -{(row.loss_pct).toFixed(1)}%
-                    </td>
-                    <td style={{ color: 'var(--accent-rose)' }}>
-                      -${row.loss.toLocaleString()}
-                    </td>
-                    <td style={{ fontWeight: 600 }}>
-                      ${row.stressed_value.toLocaleString()}
-                    </td>
-                    <td>
-                      <span className="badge medium" style={{ fontSize: '10px' }}>
-                        Hedging Advised
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
-      {/* All-Scenario Comparison Matrix */}
-      {showComparison && comparison && (
-        <div className="glass-card animate-in">
-          <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 6px 0', fontSize: '18px', fontWeight: 800 }}>
-              ⚡ Cross-Scenario Capital Loss Matrix
-            </h3>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
-              Comparative resilience evaluation of the current portfolio across all five predefined systemic crises.
-            </p>
-          </div>
-
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Macro Regime</th>
-                  <th>Base Portfolio</th>
-                  <th>Loss ($)</th>
-                  <th>Drawdown (%)</th>
-                  <th>1-Mo 95% VaR</th>
-                  <th>Expected Shortfall (CVaR)</th>
-                  <th>Risk Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(comparison).map(([key, item]) => (
-                  <tr key={key}>
-                    <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {item.scenario}
-                    </td>
-                    <td>${item.original_value.toLocaleString()}</td>
-                    <td style={{ color: 'var(--accent-rose)', fontWeight: 700 }}>
-                      -${item.total_loss.toLocaleString()}
-                    </td>
-                    <td style={{ color: 'var(--accent-rose)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-                      -{item.loss_pct}%
-                    </td>
-                    <td style={{ color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)' }}>
-                      ${item.var_95.toLocaleString()}
-                    </td>
-                    <td style={{ color: 'var(--accent-indigo)', fontFamily: 'var(--font-mono)' }}>
-                      ${item.cvar_95.toLocaleString()}
-                    </td>
-                    <td>
-                      <span className={`badge ${item.risk_rating.toLowerCase()}`}>
-                        {item.risk_rating}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Correlation Heatmap Section */}
-      {showHeatmap && (
-        <div className="glass-card animate-in">
-          <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '17px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>🔥</span> Cross-Asset Covariance &amp; Correlation Heatmap
-            </h3>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
-              Pairwise statistical correlation between benchmark portfolio components. Values exceeding 0.70 represent systemic clustering risk.
-            </p>
-          </div>
-
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table" style={{ textAlign: 'center', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left' }}>Asset / Ticker</th>
-                  {CORRELATION_MATRIX.assets.map(a => (
-                    <th key={a} style={{ textAlign: 'center' }}>{a}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CORRELATION_MATRIX.assets.map((asset, rIdx) => (
-                  <tr key={asset}>
-                    <td style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', textAlign: 'left' }}>
-                      {asset}
-                    </td>
-                    {CORRELATION_MATRIX.data[rIdx].map((val, cIdx) => {
-                      const isHigh = val >= 0.70;
-                      const isLow = val <= 0.30;
-                      const bg = rIdx === cIdx ? 'rgba(0, 242, 254, 0.25)' : isHigh ? 'rgba(255, 51, 102, 0.25)' : isLow ? 'rgba(0, 245, 155, 0.15)' : 'rgba(255, 183, 3, 0.15)';
-                      const textColor = rIdx === cIdx ? 'var(--accent-cyan)' : isHigh ? 'var(--accent-rose)' : isLow ? 'var(--accent-emerald)' : 'var(--accent-amber)';
-                      return (
-                        <td key={cIdx} style={{ background: bg, color: textColor, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>
-                          {val.toFixed(2)}
+            {/* TAB 1: Position Breakdown Table */}
+            {detailTab === 'breakdown' && (
+              <div style={{ overflowX: 'auto', maxHeight: '240px', overflowY: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Ticker</th>
+                      <th>Sector</th>
+                      <th>Base Value</th>
+                      <th>Shock</th>
+                      <th>Loss Amount</th>
+                      <th>Post-Shock Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(results?.stock_impacts || []).map((row, idx) => (
+                      <tr key={row.stock + idx}>
+                        <td style={{ fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                          {row.stock}
                         </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <td>{row.sector}</td>
+                        <td>${row.original_value.toLocaleString()}</td>
+                        <td style={{ color: 'var(--accent-rose)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                          -{(row.loss_pct).toFixed(1)}%
+                        </td>
+                        <td style={{ color: 'var(--accent-rose)', fontWeight: 700 }}>
+                          -${row.loss.toLocaleString()}
+                        </td>
+                        <td style={{ fontWeight: 600 }}>
+                          ${row.stressed_value.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* TAB 2: All-Scenario Matrix */}
+            {detailTab === 'matrix' && comparison && (
+              <div style={{ overflowX: 'auto', maxHeight: '240px', overflowY: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Macro Regime</th>
+                      <th>Base Portfolio</th>
+                      <th>Loss ($)</th>
+                      <th>Drawdown</th>
+                      <th>1-Mo 95% VaR</th>
+                      <th>CVaR (Tail Risk)</th>
+                      <th>Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(comparison).map(([key, item]) => (
+                      <tr key={key}>
+                        <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {item.scenario}
+                        </td>
+                        <td>${item.original_value.toLocaleString()}</td>
+                        <td style={{ color: 'var(--accent-rose)', fontWeight: 700 }}>
+                          -${item.total_loss.toLocaleString()}
+                        </td>
+                        <td style={{ color: 'var(--accent-rose)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+                          -{item.loss_pct}%
+                        </td>
+                        <td style={{ color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)' }}>
+                          ${item.var_95.toLocaleString()}
+                        </td>
+                        <td style={{ color: 'var(--accent-indigo)', fontFamily: 'var(--font-mono)' }}>
+                          ${item.cvar_95.toLocaleString()}
+                        </td>
+                        <td>
+                          <span className={`badge ${item.risk_rating.toLowerCase()}`}>
+                            {item.risk_rating}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* TAB 3: Correlation Heatmap */}
+            {detailTab === 'heatmap' && (
+              <div style={{ overflowX: 'auto', maxHeight: '240px', overflowY: 'auto' }}>
+                <table className="data-table" style={{ textAlign: 'center', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left' }}>Asset</th>
+                      {CORRELATION_MATRIX.assets.map(a => (
+                        <th key={a} style={{ textAlign: 'center' }}>{a}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CORRELATION_MATRIX.assets.map((asset, rIdx) => (
+                      <tr key={asset}>
+                        <td style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', textAlign: 'left' }}>
+                          {asset}
+                        </td>
+                        {CORRELATION_MATRIX.data[rIdx].map((val, cIdx) => {
+                          const isHigh = val >= 0.70;
+                          const isLow = val <= 0.30;
+                          const bg = rIdx === cIdx ? 'rgba(0, 242, 254, 0.25)' : isHigh ? 'rgba(255, 51, 102, 0.25)' : isLow ? 'rgba(0, 245, 155, 0.15)' : 'rgba(255, 183, 3, 0.15)';
+                          const textColor = rIdx === cIdx ? 'var(--accent-cyan)' : isHigh ? 'var(--accent-rose)' : isLow ? 'var(--accent-emerald)' : 'var(--accent-amber)';
+                          return (
+                            <td key={cIdx} style={{ background: bg, color: textColor, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>
+                              {val.toFixed(2)}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* TAB 4: 3D Spillover Globe */}
+            {detailTab === 'globe' && (
+              <div style={{ padding: '8px 0' }}>
+                <Globe3D height={260} compact={true} selectedScenario={scenario} />
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Modal for Custom CSV Ingestion */}
       <DataUploaderModal

@@ -23,7 +23,7 @@ function latLonToVector3(lat, lon, radius) {
   return new THREE.Vector3(x, y, z);
 }
 
-export default function Globe3D({ onSelectHub, selectedScenario = 'recession' }) {
+export default function Globe3D({ onSelectHub, selectedScenario = 'recession', height = 380, compact = false }) {
   const mountRef = useRef(null);
   const [selectedHub, setSelectedHub] = useState(HUBS[0]);
   const [viewMode, setViewMode] = useState('globe'); // 'globe' | 'towers'
@@ -34,18 +34,18 @@ export default function Globe3D({ onSelectHub, selectedScenario = 'recession' })
     if (!container) return;
 
     const width = container.clientWidth;
-    const height = container.clientHeight || 450;
+    const hVal = typeof height === 'number' ? height : parseInt(height, 10) || 380;
 
     // Scene
     const scene = new THREE.Scene();
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(45, width / hVal, 0.1, 1000);
     camera.position.z = 240;
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
+    renderer.setSize(width, hVal);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
@@ -293,25 +293,27 @@ export default function Globe3D({ onSelectHub, selectedScenario = 'recession' })
   }, [rotationSpeed]);
 
   return (
-    <div className="glass-card" style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className="glass-card" style={{ position: 'relative', overflow: 'hidden', padding: compact ? '16px' : '22px 24px' }}>
       {/* Header controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: compact ? '10px' : '16px', flexWrap: 'wrap', gap: '8px' }}>
         <div>
-          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>🌐</span> 3D Global Risk Intelligence Network & Towers
+          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: compact ? '15px' : '17px' }}>
+            <span>🌐</span> 3D Global Risk Intelligence Network &amp; Towers
           </h3>
-          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
-            Real-time geospatial risk exposure across sovereign debt & financial exchanges. Drag to rotate, click nodes to inspect.
-          </p>
+          {!compact && (
+            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Real-time geospatial risk exposure across sovereign debt &amp; financial exchanges. Drag to rotate, click nodes to inspect.
+            </p>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button
             className={`btn ${rotationSpeed === 0 ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '6px 12px', fontSize: '12px' }}
+            style={{ padding: '4px 10px', fontSize: '11px' }}
             onClick={() => setRotationSpeed(rotationSpeed === 0 ? 0.003 : 0)}
           >
-            {rotationSpeed === 0 ? '▶ Resume Rotation' : '⏸ Pause'}
+            {rotationSpeed === 0 ? '▶ Resume' : '⏸ Pause'}
           </button>
         </div>
       </div>
@@ -321,7 +323,7 @@ export default function Globe3D({ onSelectHub, selectedScenario = 'recession' })
         ref={mountRef}
         style={{
           width: '100%',
-          height: '420px',
+          height: typeof height === 'number' ? `${height}px` : height,
           borderRadius: 'var(--radius-md)',
           cursor: 'grab',
           background: 'radial-gradient(circle at center, #0f172a 0%, #060a12 100%)',
