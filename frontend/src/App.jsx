@@ -10,9 +10,20 @@ import ARLensModal from './components/ARLensModal';
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'stress' | 'globe' | 'transactions' | 'nlp' | 'analyzer'
   const [isArOpen, setIsArOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('finrisk_theme') || 'obsidian');
+
+  const changeTheme = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('finrisk_theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme}>
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="sidebar-logo">
@@ -175,14 +186,39 @@ export default function App() {
             </h1>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+            {/* Theme Mode Toggle Pill */}
+            <div className="theme-switcher">
+              <button
+                className={`theme-btn ${theme === 'obsidian' ? 'active' : ''}`}
+                onClick={() => changeTheme('obsidian')}
+                title="Palantir / Bloomberg Obsidian Terminal"
+              >
+                ⬛ Obsidian
+              </button>
+              <button
+                className={`theme-btn ${theme === 'cyberpunk' ? 'active' : ''}`}
+                onClick={() => changeTheme('cyberpunk')}
+                title="Cyberpunk Neon Glass"
+              >
+                🟪 Cyberpunk
+              </button>
+              <button
+                className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => changeTheme('light')}
+                title="Crisil / S&P Institutional Light"
+              >
+                ☀️ S&amp;P Light
+              </button>
+            </div>
+
             <button
               className="btn btn-primary"
               onClick={() => setIsArOpen(true)}
               style={{
-                background: 'linear-gradient(135deg, #22d3ee 0%, #6366f1 100%)',
-                color: '#fff',
-                boxShadow: '0 4px 15px rgba(34, 211, 238, 0.3)',
+                background: 'var(--gradient-primary)',
+                color: theme === 'light' ? '#fff' : '#05080e',
+                boxShadow: 'var(--shadow-glow)',
               }}
             >
               👓 Launch AR Mode
