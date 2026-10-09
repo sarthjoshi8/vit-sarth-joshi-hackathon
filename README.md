@@ -16,7 +16,7 @@
 
 **Personal Email ID:** joshisarth8yt@gmail.com
 
-**College / Campus:** VIT Vellore
+**College / Campus:** Vellore Institute of Technology, VIT Vellore
 
 **Demo Video Link:** *(YouTube unlisted — to be added)*
 
