@@ -20,7 +20,7 @@
 
 **Demo Video Link:** *(YouTube unlisted — to be added)*
 
-**Slide Deck Link:** [docs/presentation_deck.md](./docs/presentation_deck.md)
+**Slide Deck Link:** [docs/presentation.pdf](./docs/presentation.pdf) (Presentation Slides PDF) | [docs/presentation_deck.md](./docs/presentation_deck.md) (Slide Content)
 
 ---
 
@@ -231,7 +231,8 @@ vit-sarth-joshi-hackathon/
 ├── data/
 │   └── samples/                     ← All 6 CSV datasets (<2MB total)
 ├── docs/
-│   ├── presentation_deck.md         ← 7-slide pitch deck content
+│   ├── presentation.pdf             ← 7-slide presentation deck (PDF)
+│   ├── presentation_deck.md         ← 7-slide pitch deck content (Markdown)
 │   ├── architecture.md              ← Detailed system design
 │   └── data_profile.md              ← Dataset schema & profiling
 ├── src/backend/app/
