@@ -252,7 +252,7 @@ export default function App() {
             <Dashboard onNavigateToStress={() => setActiveTab('stress')} />
           )}
           {activeTab === 'stress' && <StressTesting />}
-          {activeTab === 'globe' && <Globe3D />}
+          {activeTab === 'globe' && <Globe3D height={520} />}
           {activeTab === 'transactions' && <TransactionsView />}
           {activeTab === 'nlp' && <NLPFeed />}
           {activeTab === 'analyzer' && <LiveAnalyzer />}
