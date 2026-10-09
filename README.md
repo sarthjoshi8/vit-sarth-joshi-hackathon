@@ -11,7 +11,8 @@
 ---
 
 **Candidate Name:** Sarth Hemant Joshi  
-**College Email ID:** joshisarth8yt@gmail.com  
+**College Email ID:** sarthhemant.joshi2023@vitstudent.ac.in 
+**Personal Email ID:** joshisarth8yt@gmail.com
 **College / Campus:** VIT Vellore  
 **Demo Video Link:** *(YouTube unlisted — to be added)*  
 **Slide Deck Link:** [docs/presentation_deck.md](./docs/presentation_deck.md)
