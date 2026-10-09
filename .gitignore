@@ -8,12 +8,12 @@ __pycache__/
 .DS_Store
 .venv/
 node_modules/
-/dist/
+frontend/dist/
 /build/
 cache/
 *.log
 data/raw_full/
 dataset_11/
 *.egg-info/
-__pycache__/
 .ipynb_checkpoints/
+data/finrisk.sqlite3
