@@ -879,14 +879,15 @@ IF risk_score ≥ 0.48 → FLAGGED AS ANOMALY
 </html>'''
 
 # Load architecture image
-img_path = '/Users/harsh/Desktop/vit-sarth-joshi-hackathon/docs/architecture.png'
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+img_path = os.path.join(repo_root, 'docs', 'architecture.png')
 with open(img_path, 'rb') as f:
     b64 = base64.b64encode(f.read()).decode('utf-8')
 
 final_html = html_content.replace('{{ARCH_B64}}', b64)
 
-html_path = '/Users/harsh/Desktop/vit-sarth-joshi-hackathon/docs/presentation.html'
-pdf_path = '/Users/harsh/Desktop/vit-sarth-joshi-hackathon/docs/presentation.pdf'
+html_path = os.path.join(repo_root, 'docs', 'presentation.html')
+pdf_path = os.path.join(repo_root, 'docs', 'presentation.pdf')
 
 with open(html_path, 'w', encoding='utf-8') as f:
     f.write(final_html)
