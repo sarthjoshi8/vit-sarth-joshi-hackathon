@@ -37,6 +37,8 @@ The result is a **Palantir/Bloomberg-style risk terminal** runnable entirely loc
 
 ## 2. Architecture & Tech Stack
 
+![FINRISK AI — System Architecture Diagram](./docs/architecture.png)
+
 ```
                 ┌─────────────────────────────────────┐
                 │         DATA INGESTION LAYER         │
@@ -244,19 +246,4 @@ vit-sarth-joshi-hackathon/
 
 ---
 
-## ✅ Submission Compliance Checklist
-
-- [x] Repository is **Public**
-- [x] MIT License included
-- [x] All datasets are **synthetic or publicly available** (no proprietary data)
-- [x] Setup + run commands clearly documented in Quickstart
-- [x] Module B (Strategic Stress Testing) fully implemented
-- [x] Architecture diagram included in `docs/`
-- [x] Presentation deck included in `docs/`
-- [x] 100% test pass rate documented
-- [x] No cloud dependencies — fully local execution
-- [ ] Demo video link *(to be added)*
-
----
-
-*Submission for S&P Global & CRISIL Campus Hackathon 2026 — Individual submission by Sarth Hemant Joshi, VIT Vellore.*
+*Built with curiosity, a lot of late nights, and a genuine belief that financial risk intelligence should be accessible to everyone — not just those with Bloomberg subscriptions. This is my submission for the S&P Global & CRISIL Campus Hackathon 2026, crafted entirely by me, Sarth Hemant Joshi, from VIT Vellore. Hope you enjoy exploring it as much as I enjoyed building it.* 🚀
