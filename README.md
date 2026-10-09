@@ -43,7 +43,10 @@ The result is a **Palantir/Bloomberg-style risk terminal** runnable entirely loc
 
 ## 2. Architecture & Tech Stack
 
-![FINRISK AI — System Architecture Diagram](./docs/architecture.png)
+<p align="center">
+  <img src="./docs/architecture.png" alt="FINRISK AI — System Architecture Diagram" width="600">
+</p>
+
 
 ```
                 ┌─────────────────────────────────────┐
