@@ -9,9 +9,10 @@ All raw datasets reside outside the repository (`~/Desktop/dataset_11`), while c
 ---
 
 ## 1. Financial Transactions (`financial_transactions.csv`)
+* **Source:** [Kaggle: Financial Transactions Dataset](https://www.kaggle.com/datasets/cankatsrc/financial-transactions-dataset/data) by `cankatsrc`
 * **Raw Size:** ~7.4 MB (50,000+ records)
 * **Sample Size:** 3,000 records (`data/samples/transactions_sample.csv`)
-* **Domain:** Core Banking & Operational Fraud Surveillance
+* **Domain:** Core Banking & Operational Fraud Surveillance (Synthetic benchmark to preserve customer privacy)
 
 ### Schema
 | Column | Type | Description | Sample Value |
@@ -31,6 +32,7 @@ All raw datasets reside outside the repository (`~/Desktop/dataset_11`), while c
 ---
 
 ## 2. Financial PhraseBank (`all-data.csv`)
+* **Source:** [Kaggle: Sentiment Analysis for Financial News](https://www.kaggle.com/datasets/ankurzing/sentiment-analysis-for-financial-news) by `ankurzing`
 * **Raw Size:** ~672 KB (4,846 expert-annotated financial sentences)
 * **Sample Size:** 2,000 records (`data/samples/phrasebank_sample.csv`)
 * **Domain:** Benchmark Financial Sentiment Corpus (Malo et al., Aalto University)
@@ -48,6 +50,7 @@ All raw datasets reside outside the repository (`~/Desktop/dataset_11`), while c
 ---
 
 ## 3. Financial News Headlines (`cnbc_headlines.csv`, `guardian_headlines.csv`, `reuters_headlines.csv`)
+* **Source:** [Kaggle: Financial News Headlines](https://www.kaggle.com/datasets/notlucasp/financial-news-headlines) by `notlucasp`
 * **Raw Size:** ~11.8 MB (Reuters ~9.7MB, Guardian ~1.4MB, CNBC ~682KB)
 * **Sample Size:** 2,000 records per source (6,000 total in `data/samples/`)
 * **Domain:** Global Macroeconomic & Corporate Intelligence
@@ -66,6 +69,7 @@ All raw datasets reside outside the repository (`~/Desktop/dataset_11`), while c
 ---
 
 ## 4. Stock Tweet Sentiment Dataset (`reduced_dataset-release.csv`)
+* **Source:** [Kaggle: Tweet Sentiment's Impact on Stock Returns](https://www.kaggle.com/datasets/thedevastator/tweet-sentiment-s-impact-on-stock-returns/data) by `thedevastator`
 * **Raw Size:** ~23.3 MB (200,000+ financial tweets)
 * **Sample Size:** 3,000 records (`data/samples/tweets_sample.csv`)
 * **Domain:** High-Frequency Retail & Institutional Social Sentiment

@@ -105,21 +105,21 @@ The result is a **Palantir/Bloomberg-style risk terminal** runnable entirely loc
 
 ## 3. Dataset Used
 
-All datasets are **publicly available or synthetically generated** — no proprietary or client data is used.
+All datasets used in this project are sourced from **Kaggle** under open public licenses — no confidential, proprietary, or private banking client data is used.
 
-| Dataset | Source | Size | Nature |
+| Dataset File | Kaggle Dataset & Source Link | Sample Size | Nature & Purpose |
 |---|---|---|---|
-| `transactions_sample.csv` | Synthetic (generated) | 3,000 rows | Banking transaction ledger — customer ID, amount, type, description |
-| `phrasebank_sample.csv` | Financial PhraseBank (Malo et al., 2014) — Public | ~1,000 rows | Annotated financial sentences with sentiment labels |
-| `cnbc_headlines_sample.csv` | Publicly scraped CNBC financial headlines | ~2,000 rows | News headline + timestamp |
-| `guardian_headlines_sample.csv` | The Guardian public RSS/API | ~1,500 rows | Financial section headlines |
-| `reuters_headlines_sample.csv` | Reuters public financial feeds | ~2,300 rows | Market/business headlines |
-| `tweets_sample.csv` | Kaggle: Stock Market Tweet Sentiment (public) | ~1,200 rows | Tweets with LSTM polarity, 1/7-day returns, 30d volatility |
+| `transactions_sample.csv` | [Financial Transactions Dataset](https://www.kaggle.com/datasets/cankatsrc/financial-transactions-dataset/data) (by cankatsrc) | 3,000 rows | **Synthetic banking ledger**: Customer IDs, amounts, types, and descriptions generated for anomaly detection & velocity surveillance without exposing private PII/PCI-DSS data. |
+| `phrasebank_sample.csv` | [Sentiment Analysis for Financial News](https://www.kaggle.com/datasets/ankurzing/sentiment-analysis-for-financial-news) (by ankurzing) | ~1,000 rows | **Real expert-annotated financial corpus**: Financial PhraseBank sentences labeled with positive, neutral, and negative sentiment. |
+| `cnbc_headlines_sample.csv` | [Financial News Headlines](https://www.kaggle.com/datasets/notlucasp/financial-news-headlines) (by notlucasp) | ~2,000 rows | **Real news wire headlines**: CNBC financial news with timestamps and descriptions. |
+| `guardian_headlines_sample.csv` | [Financial News Headlines](https://www.kaggle.com/datasets/notlucasp/financial-news-headlines) (by notlucasp) | ~1,500 rows | **Real news wire headlines**: The Guardian financial section headlines and summaries. |
+| `reuters_headlines_sample.csv` | [Financial News Headlines](https://www.kaggle.com/datasets/notlucasp/financial-news-headlines) (by notlucasp) | ~2,300 rows | **Real news wire headlines**: Reuters global market, business, and macroeconomic news feed. |
+| `tweets_sample.csv` | [Tweet Sentiment's Impact on Stock Returns](https://www.kaggle.com/datasets/thedevastator/tweet-sentiment-s-impact-on-stock-returns/data) (by thedevastator) | ~1,200 rows | **Real equity social sentiment**: Stock tweets mapped to LSTM polarity, forward returns (1d, 7d), and 30-day volatility. |
 
-**Assumptions:**
-- Transaction amounts and customer IDs are fully synthetic — no real customer data.
-- Headlines are used solely for NLP sentiment classification research purposes.
-- All data fits within the `data/samples/` folder under 2MB total.
+**Clarification on Synthetic vs. Real Data:**
+- **Why are transactions synthetic?** Real banking transaction logs contain sensitive personal and financial data (PII, account numbers, credit limits). In accordance with banking privacy standards (GDPR, RBI, PCI-DSS), the `transactions` dataset from Kaggle uses synthetically generated transactions to test statistical anomaly detection (Z-scores, velocity, amount spikes) safely.
+- **Real-World Text Data:** All financial news headlines (CNBC, Guardian, Reuters), the Financial PhraseBank corpus, and social market tweets represent authentic, real-world financial text used for NLP sentiment calibration and market shock correlation.
+- **Repository Compliance:** To comply with repository distribution constraints (<50MB git limit), reproducible samples (<2MB total) are provided in `data/samples/`.
 
 ---
 
