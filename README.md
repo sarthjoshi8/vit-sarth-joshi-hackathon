@@ -257,3 +257,7 @@ vit-sarth-joshi-hackathon/
 ---
 
 *Built with curiosity, a lot of late nights, and a genuine belief that financial risk intelligence should be accessible to everyone — not just those with Bloomberg subscriptions. This is my submission for the S&P Global & CRISIL Campus Hackathon 2026, crafted entirely by me, Sarth Hemant Joshi, from VIT Vellore. Hope you enjoy exploring it as much as I enjoyed building it.* 🚀
+
+---
+
+MIT License — see [LICENSE](./LICENSE)
